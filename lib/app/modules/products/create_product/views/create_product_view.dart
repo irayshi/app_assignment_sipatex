@@ -111,12 +111,6 @@ class CreateProductView extends GetView<CreateProductController> {
             const SizedBox(height: 10),
             TextFormField(
               controller: controller.brandCtrl,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Brand is required';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 20),
             const Text(
@@ -130,7 +124,9 @@ class CreateProductView extends GetView<CreateProductController> {
             TextFormField(
               controller: controller.basePriceCtrl,
               keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Price is required';
@@ -172,12 +168,6 @@ class CreateProductView extends GetView<CreateProductController> {
               decoration: const InputDecoration(
                 helperText: 'Separate options with commas',
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Storage Options is required';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 20),
             const Text(
@@ -193,12 +183,6 @@ class CreateProductView extends GetView<CreateProductController> {
               decoration: const InputDecoration(
                 helperText: 'Separate options with commas',
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Color Options is required';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 20),
             const Text(
@@ -211,12 +195,6 @@ class CreateProductView extends GetView<CreateProductController> {
             const SizedBox(height: 10),
             TextFormField(
               controller: controller.displayCtrl,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Display is required';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 20),
             const Text(
@@ -229,14 +207,22 @@ class CreateProductView extends GetView<CreateProductController> {
             const SizedBox(height: 10),
             TextFormField(
               controller: controller.cPUCtrl,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'CPU is required';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 20),
+            ...[
+              const Text(
+                'GPU',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: controller.gPUCtrl,
+              ),
+              const SizedBox(height: 20),
+            ],
             const Text(
               'Rear Camera',
               style: TextStyle(
@@ -247,12 +233,6 @@ class CreateProductView extends GetView<CreateProductController> {
             const SizedBox(height: 10),
             TextFormField(
               controller: controller.rearCameraCtrl,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Rear Camera is required';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 20),
             const Text(
@@ -265,12 +245,6 @@ class CreateProductView extends GetView<CreateProductController> {
             const SizedBox(height: 10),
             TextFormField(
               controller: controller.frontCameraCtrl,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Front Camera is required';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 20),
             ButtonWidget(

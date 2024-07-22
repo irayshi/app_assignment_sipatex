@@ -59,7 +59,7 @@ class ProductProvider extends GetxController {
       'brand': product.brand,
       'description': product.description,
       'basePrice': product.basePrice,
-      'inStock': product.inStock! ? 1 : 0,
+      'inStock': product.inStock ? 1 : 0,
       'stock': product.stock,
       'featuredImage': product.featuredImage,
       'thumbnailImage': product.thumbnailImage,
@@ -67,6 +67,7 @@ class ProductProvider extends GetxController {
       'colorOptions': jsonEncode(product.colorOptions),
       'display': product.display,
       'CPU': product.cPU,
+      'GPU': product.gPU,
       'camera': jsonEncode(product.camera?.toJson()),
     };
     DatabaseHelper().insert('products', data);
@@ -80,7 +81,7 @@ class ProductProvider extends GetxController {
       'brand': product.brand,
       'description': product.description,
       'basePrice': product.basePrice,
-      'inStock': product.inStock! ? 1 : 0,
+      'inStock': product.inStock ? 1 : 0,
       'stock': product.stock,
       'featuredImage': product.featuredImage,
       'thumbnailImage': product.thumbnailImage,
@@ -88,6 +89,7 @@ class ProductProvider extends GetxController {
       'colorOptions': jsonEncode(product.colorOptions),
       'display': product.display,
       'CPU': product.cPU,
+      'GPU': product.gPU,
       'camera': jsonEncode(product.camera?.toJson()),
     };
     DatabaseHelper().edit('products', data, product.id!);

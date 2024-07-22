@@ -27,7 +27,7 @@ class DatabaseHelper {
         productCategory TEXT NOT NULL,
         name TEXT NOT NULL UNIQUE,
         brand TEXT,
-        description TEXT,
+        description TEXT NOT NULL,
         basePrice INT NOT NULL,
         inStock BOOLEAN NOT NULL,
         stock INT NOT NULL,
@@ -37,6 +37,7 @@ class DatabaseHelper {
         colorOptions TEXT,
         display TEXT,
         CPU TEXT,
+        GPU TEXT,
         camera JSON
       )
     ''',

@@ -22,21 +22,21 @@ class ProfileView extends GetView<ProfileController> {
           Obx(
             () => Text(
               'Name: ${AuthService.to.user.displayName}',
-              style: context.textTheme.titleLarge,
+              style: context.textTheme.titleMedium,
             ),
           ),
           const SizedBox(height: 10),
           Obx(
             () => Text(
               'Email: ${AuthService.to.user.email}',
-              style: context.textTheme.titleLarge,
+              style: context.textTheme.titleMedium,
             ),
           ),
           const SizedBox(height: 10),
           Obx(
             () => Text(
               'Role: ${AuthService.to.user.role}',
-              style: context.textTheme.titleLarge,
+              style: context.textTheme.titleMedium,
             ),
           ),
         ],

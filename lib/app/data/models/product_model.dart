@@ -1,35 +1,37 @@
 class Product {
   int? id;
-  String? productCategory;
-  String? name;
+  late String productCategory;
+  late String name;
   String? brand;
-  String? description;
-  int? basePrice;
-  bool? inStock;
-  int? stock;
+  late String description;
+  late int basePrice;
+  late bool inStock;
+  late int stock;
   String? featuredImage;
   String? thumbnailImage;
   List<String>? storageOptions;
   List<String>? colorOptions;
   String? display;
   String? cPU;
+  String? gPU;
   Camera? camera;
 
   Product(
       {this.id,
-      this.productCategory,
-      this.name,
+      required this.productCategory,
+      required this.name,
       this.brand,
-      this.description,
-      this.basePrice,
-      this.inStock,
-      this.stock,
+      required this.description,
+      required this.basePrice,
+      required this.inStock,
+      required this.stock,
       this.featuredImage,
       this.thumbnailImage,
       this.storageOptions,
       this.colorOptions,
       this.display,
       this.cPU,
+      this.gPU,
       this.camera});
 
   Product.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class Product {
     colorOptions = json['colorOptions']?.cast<String>();
     display = json['display'];
     cPU = json['CPU'];
+    gPU = json['GPU'];
     camera = json['camera'] != null ? Camera?.fromJson(json['camera']) : null;
   }
 
@@ -66,6 +69,7 @@ class Product {
     data['colorOptions'] = colorOptions;
     data['display'] = display;
     data['CPU'] = cPU;
+    data['GPU'] = gPU;
     if (camera != null) {
       data['camera'] = camera?.toJson();
     }

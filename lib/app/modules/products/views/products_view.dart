@@ -1,6 +1,7 @@
 import 'package:app_assignment_sipatex/app/data/services/auth_service.dart';
 import 'package:app_assignment_sipatex/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:get/get.dart';
 
@@ -28,8 +29,19 @@ class ProductsView extends GetView<ProductsController> {
                   Routes.DETAIL_PRODUCT,
                   arguments: product,
                 ),
-                title: Text(product.name!),
-                subtitle: Text('Stock: ${product.stock}'),
+                title: Text(
+                  product.name,
+                  style: context.textTheme.titleLarge,
+                ),
+                subtitle: Text('${NumberFormat.currency(
+                  locale: 'id',
+                  symbol: 'Rp ',
+                  decimalDigits: 0,
+                ).format(product.basePrice)}\nStock:\t${NumberFormat.currency(
+                  locale: 'id',
+                  symbol: '',
+                  decimalDigits: 0,
+                ).format(product.stock)}'),
                 trailing: AuthService.to.user.role == 'admin'
                     ? Row(
                         mainAxisSize: MainAxisSize.min,

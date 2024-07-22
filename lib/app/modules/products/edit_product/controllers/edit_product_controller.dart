@@ -1,6 +1,7 @@
 import 'package:app_assignment_sipatex/app/data/models/product_model.dart';
 import 'package:app_assignment_sipatex/app/data/providers/product_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get/get.dart';
 
 class EditProductController extends GetxController {
@@ -10,12 +11,13 @@ class EditProductController extends GetxController {
   late final TextEditingController nameCtrl;
   late final TextEditingController brandCtrl;
   late final TextEditingController descriptionCtrl;
-  late final TextEditingController basePriceCtrl;
-  late final TextEditingController stockCtrl;
+  late final MoneyMaskedTextController basePriceCtrl;
+  late final MoneyMaskedTextController stockCtrl;
   late final TextEditingController storageOptionsCtrl;
   late final TextEditingController colorOptionsCtrl;
   late final TextEditingController displayCtrl;
   late final TextEditingController cPUCtrl;
+  late final TextEditingController gPUCtrl;
   late final TextEditingController rearCameraCtrl;
   late final TextEditingController frontCameraCtrl;
   final formKey = GlobalKey<FormState>();
@@ -27,16 +29,26 @@ class EditProductController extends GetxController {
     nameCtrl = TextEditingController(text: _product.name);
     brandCtrl = TextEditingController(text: _product.brand);
     descriptionCtrl = TextEditingController(text: _product.description);
-    basePriceCtrl = TextEditingController(text: _product.basePrice.toString());
-    stockCtrl = TextEditingController(text: _product.stock.toString());
+    basePriceCtrl = MoneyMaskedTextController(
+      decimalSeparator: '',
+      precision: 0,
+      leftSymbol: 'Rp ',
+      initialValue: _product.basePrice.toDouble(),
+    );
+    stockCtrl = MoneyMaskedTextController(
+      decimalSeparator: '',
+      precision: 0,
+      initialValue: _product.stock.toDouble(),
+    );
     storageOptionsCtrl = TextEditingController(
-        text: _product.storageOptions!.map((e) => e.trim()).join(', '));
+        text: _product.storageOptions?.map((e) => e.trim()).join(', '));
     colorOptionsCtrl = TextEditingController(
-        text: _product.colorOptions!.map((e) => e.trim()).join(', '));
+        text: _product.colorOptions?.map((e) => e.trim()).join(', '));
     displayCtrl = TextEditingController(text: _product.display);
     cPUCtrl = TextEditingController(text: _product.cPU);
-    rearCameraCtrl = TextEditingController(text: _product.camera!.rearCamera);
-    frontCameraCtrl = TextEditingController(text: _product.camera!.frontCamera);
+    gPUCtrl = TextEditingController(text: _product.gPU);
+    rearCameraCtrl = TextEditingController(text: _product.camera?.rearCamera);
+    frontCameraCtrl = TextEditingController(text: _product.camera?.frontCamera);
     super.onInit();
   }
 
@@ -52,6 +64,7 @@ class EditProductController extends GetxController {
     colorOptionsCtrl.dispose();
     displayCtrl.dispose();
     cPUCtrl.dispose();
+    gPUCtrl.dispose();
     rearCameraCtrl.dispose();
     frontCameraCtrl.dispose();
     super.onClose();
@@ -68,20 +81,23 @@ class EditProductController extends GetxController {
         thumbnailImage: _product.thumbnailImage,
         productCategory: productCategoryCtrl.text,
         name: nameCtrl.text,
-        brand: brandCtrl.text,
+        brand: brandCtrl.text == '' ? null : brandCtrl.text,
         description: descriptionCtrl.text,
-        basePrice: int.parse(basePriceCtrl.text),
-        inStock: int.parse(stockCtrl.text) > 0,
-        stock: int.parse(stockCtrl.text),
-        storageOptions:
-            storageOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
-        colorOptions:
-            colorOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
-        display: displayCtrl.text,
-        cPU: cPUCtrl.text,
+        basePrice: basePriceCtrl.numberValue.toInt(),
+        inStock: stockCtrl.numberValue.toInt() > 0,
+        stock: stockCtrl.numberValue.toInt(),
+        storageOptions: storageOptionsCtrl.text == ''
+            ? null
+            : storageOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
+        colorOptions: colorOptionsCtrl.text == ''
+            ? null
+            : colorOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
+        display: displayCtrl.text == '' ? null : displayCtrl.text,
+        cPU: cPUCtrl.text == '' ? null : cPUCtrl.text,
+        gPU: gPUCtrl.text == '' ? null : gPUCtrl.text,
         camera: Camera(
-          frontCamera: frontCameraCtrl.text,
-          rearCamera: rearCameraCtrl.text,
+          frontCamera: frontCameraCtrl.text == '' ? null : frontCameraCtrl.text,
+          rearCamera: rearCameraCtrl.text == '' ? null : rearCameraCtrl.text,
         ),
       ),
     );
