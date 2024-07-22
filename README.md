@@ -7,7 +7,7 @@ Aplikasi ini saya buat untuk keperluan test lanjutan di PT Sipatex. Saya membuat
 Untuk memulai pengembangan secara lokal, copy perintah berikut
 
 ```sh
-https://github.com/irayshi/app_assignment_sipantex.git
+https://github.com/irayshi/app_assignment_sipatex.git
 ```
 
 lalu jalankan perintah ini untuk menginstal paket yang dibutuhkan
