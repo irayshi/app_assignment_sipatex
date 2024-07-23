@@ -49,7 +49,8 @@ class UserProvider extends GetxController {
     return DatabaseHelper().openDB().then((db) async {
       final users = await db.query(
         'users',
-        where: "email = '$email'",
+        where: 'email = ?',
+        whereArgs: [email],
       );
       return users.isEmpty ? false : true;
     });

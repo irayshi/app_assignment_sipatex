@@ -22,8 +22,8 @@ class AuthService extends GetxService {
     try {
       final users = await _database.query(
         'users',
-        where: "email = '$email' AND password = '$password'",
-        columns: ['id', 'displayName', 'email', 'role'],
+        where: 'email = ? AND password = ?',
+        whereArgs: [email, password],
       );
       if (users.isNotEmpty) {
         message = 'Login berhasil';
@@ -73,7 +73,8 @@ class AuthService extends GetxService {
   void refreshAuth() async {
     final users = await _database.query(
       'users',
-      where: 'id = ${user.id}',
+      where: 'id = ?',
+      whereArgs: [user.id],
       columns: ['id', 'displayName', 'email', 'role'],
     );
     _user.value = User.fromJson(users.first);

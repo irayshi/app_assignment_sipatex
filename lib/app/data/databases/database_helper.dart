@@ -45,7 +45,7 @@ class DatabaseHelper {
 
   Future<Database> openDB() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'app_sipantex.db');
+    final path = join(dbPath, 'app_sipatex.db');
 
     return await openDatabase(
       path,
