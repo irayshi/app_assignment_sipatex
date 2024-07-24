@@ -36,20 +36,25 @@ class RegisterController extends GetxController {
 
   void register() async {
     if (!formKey.currentState!.validate()) return;
-    if (checkEmail = await UserProvider.to.checkEmail(emailCtrl.text)) {
-      formKey.currentState!.validate();
-      return;
-    }
+    String message;
+    try {
+      if (checkEmail = await UserProvider.to.checkEmail(emailCtrl.text)) {
+        formKey.currentState!.validate();
+        return;
+      }
 
-    onClick.value = false;
-    final success = await AuthService.to.register(
-      emailCtrl.text,
-      passwordCtrl.text,
-      nameCtrl.text,
-    );
-    if (success) {
-      Get.offAllNamed(Routes.HOME);
+      onClick.value = false;
+      await AuthService.to.register(
+        emailCtrl.text,
+        passwordCtrl.text,
+        nameCtrl.text,
+      );
+      Get.offAllNamed(Routes.MAIN);
+      message = 'Register berhasil';
+    } catch (e) {
+      message = 'Register gagal: terjadi kesalahan sistem';
     }
+    Get.rawSnackbar(message: message);
     onClick.value = true;
   }
 }

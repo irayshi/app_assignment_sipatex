@@ -5,14 +5,17 @@ import 'package:app_assignment_sipatex/app/data/models/product_model.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:sqflite/sqflite.dart';
 
 class ProductProvider extends GetxController {
   static ProductProvider get to => Get.find();
+  late Database _database;
   final baseUrl = 'https://dummyapi.online/api';
   final products = <Product>[].obs;
 
   @override
   Future<void> onInit() async {
+    _database = await DatabaseHelper().database;
     products.value = await _getLocal();
     if (await Connectivity().checkConnectivity() == ConnectivityResult.none) {
       return;
@@ -37,9 +40,7 @@ class ProductProvider extends GetxController {
   }
 
   Future<List<Product>> _getLocal() async {
-    var data = await DatabaseHelper().openDB().then((db) {
-      return db.query('products');
-    });
+    var data = await _database.query('products');
 
     return data.map((e) {
       final mutableE = Map<String, dynamic>.from(e);
@@ -70,7 +71,7 @@ class ProductProvider extends GetxController {
       'GPU': product.gPU,
       'camera': jsonEncode(product.camera?.toJson()),
     };
-    DatabaseHelper().insert('products', data);
+    await _database.insert('products', data);
   }
 
   void edit(Product product) async {
@@ -92,7 +93,12 @@ class ProductProvider extends GetxController {
       'GPU': product.gPU,
       'camera': jsonEncode(product.camera?.toJson()),
     };
-    DatabaseHelper().edit('products', data, product.id!);
+    await _database.update(
+      'products',
+      data,
+      where: 'id = ?',
+      whereArgs: [product.id!],
+    );
   }
 
   bool _productExists(List<Product> dataLocal, List<Product> dataApi) {
@@ -106,7 +112,11 @@ class ProductProvider extends GetxController {
     );
   }
 
-  void delete(int id) {
-    DatabaseHelper().delete('products', id);
+  void delete(int id) async {
+    await _database.delete(
+      'products',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

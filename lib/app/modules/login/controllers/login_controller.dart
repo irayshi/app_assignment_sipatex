@@ -1,6 +1,6 @@
 import 'package:app_assignment_sipatex/app/data/services/auth_service.dart';
 import 'package:app_assignment_sipatex/app/routes/app_pages.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
@@ -26,13 +26,22 @@ class LoginController extends GetxController {
     if (!formKey.currentState!.validate()) return;
 
     onClick.value = false;
-    final status = await AuthService.to.login(
-      emailCtrl.text,
-      passwordCtrl.text,
-    );
-    if (status) {
-      Get.offAllNamed(Routes.HOME);
+    String message;
+    try {
+      final status = await AuthService.to.login(
+        emailCtrl.text,
+        passwordCtrl.text,
+      );
+      if (status) {
+        Get.offAllNamed(Routes.MAIN);
+        message = 'Login berhasil';
+      } else {
+        message = 'Login gagal: username atau password salah';
+      }
+    } catch (e) {
+      message = 'Login gagal: terjadi kesalahan sistem';
     }
+    Get.rawSnackbar(message: message);
     onClick.value = true;
   }
 }

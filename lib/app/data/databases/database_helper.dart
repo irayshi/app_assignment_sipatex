@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'package:app_assignment_sipatex/app/data/models/user_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -9,8 +10,30 @@ class DatabaseHelper {
   DatabaseHelper._init();
   factory DatabaseHelper() => _instance;
 
-  final _tables = [
-    '''
+  static Database? _database;
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDB();
+    return _database!;
+  }
+
+  Future<Database> _initDB() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'app_sipatex.db');
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
+  }
+
+  FutureOr<void> _onCreate(Database db, int version) async {
+    print('_onCreate');
+    await db.execute(
+      '''
       CREATE TABLE users
       (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,8 +42,10 @@ class DatabaseHelper {
         role TEXT DEFAULT 'guest' NOT NULL,
         displayName TEXT NOT NULL
       )
-    ''',
-    '''
+      ''',
+    );
+    await db.execute(
+      '''
       CREATE TABLE products
       (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,85 +65,29 @@ class DatabaseHelper {
         GPU TEXT,
         camera JSON
       )
-    ''',
-  ];
+      ''',
+    );
 
-  Future<Database> openDB() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'app_sipatex.db');
-
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: (db, version) async {
-        _tables.map((table) async {
-          return await db
-              .execute(table)
-              .then(
-                (value) => print('table berhasil dibuat'),
-              )
-              .catchError(
-                (e) => print("table gagal dibuat\nError: $e"),
-              );
-        }).toList();
-
-        await db.insert(
-          'users',
-          User(
-            email: 'admin@gmail.com',
-            password: '123456',
-            role: 'admin',
-            displayName: 'Raffi G',
-          ).toJson(),
-        );
-
-        await db.insert(
-          'users',
-          User(
-            email: 'guest@gmail.com',
-            password: '123456',
-            role: 'guest',
-            displayName: 'Raffi A',
-          ).toJson(),
-        );
-      },
+    await db.insert(
+      'users',
+      User(
+        email: 'admin@gmail.com',
+        password: '123456',
+        role: 'admin',
+        displayName: 'Raffi A',
+      ).toJson(),
+    );
+    await db.insert(
+      'users',
+      User(
+        email: 'guest@gmail.com',
+        password: '123456',
+        role: 'guest',
+        displayName: 'Raffi G',
+      ).toJson(),
     );
   }
 
-  void resetTable(String table) async {
-    final db = await openDB();
-    db.execute('DELETE FROM $table');
-  }
-
-  void insert(String table, Map<String, dynamic> data) async {
-    await openDB().then((db) {
-      db.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
-    }).catchError((e) {
-      print("gagal menambahkan data ($e)");
-    });
-  }
-
-  Future<void> edit(String table, Map<String, dynamic> data, int id) async {
-    await openDB().then((db) {
-      db.update(
-        table,
-        data,
-        conflictAlgorithm: ConflictAlgorithm.replace,
-        where: 'id = $id',
-      );
-    }).catchError((e) {
-      print("gagal mengedit data ($e)");
-    });
-  }
-
-  Future<List> get(String table) async {
-    final db = await openDB();
-    var result = await db.query(table);
-    return result.toList();
-  }
-
-  void delete(String table, int id) async {
-    final db = await openDB();
-    db.delete(table, where: 'id = $id');
-  }
+  FutureOr<void> _onUpgrade(
+      Database db, int oldVersion, int newVersion) async {}
 }
