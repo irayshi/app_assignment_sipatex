@@ -32,10 +32,17 @@ class CreateProductView extends GetView<CreateProductController> {
             const SizedBox(height: 10),
             TextFormField(
               controller: controller.nameCtrl,
+              onChanged: (value) {
+                if (controller.productExists) {
+                  controller.productExists = false;
+                }
+              },
               keyboardType: TextInputType.name,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Name is required';
+                } else if (controller.productExists) {
+                  return 'Name is already exists';
                 }
                 return null;
               },
@@ -75,22 +82,24 @@ class CreateProductView extends GetView<CreateProductController> {
                 }
                 return Get.find<HomeController>()
                     .categories
-                    .where((category) => category!
+                    .where((category) => category
                         .toLowerCase()
                         .contains(textEditingValue.text.toLowerCase()))
                     .cast<String>();
               },
-              displayStringForOption: (option) => option,
+              onSelected: (option) =>
+                  controller.productCategoryCtrl.text = option,
               fieldViewBuilder: (
                 context,
                 textEditingController,
                 focusNode,
                 onFieldSubmitted,
               ) {
-                textEditingController = controller.productCategoryCtrl;
                 return TextFormField(
                   focusNode: focusNode,
-                  controller: controller.productCategoryCtrl,
+                  controller: textEditingController,
+                  onChanged: (value) =>
+                      controller.productCategoryCtrl.text = value,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Category is required';

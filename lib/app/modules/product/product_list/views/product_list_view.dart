@@ -17,6 +17,7 @@ class ProductListView extends GetView<ProductListController> {
         centerTitle: true,
       ),
       body: RefreshIndicator(
+        color: Colors.white,
         onRefresh: () async => controller.onRefresh(),
         child: Obx(
           () => ListView.builder(

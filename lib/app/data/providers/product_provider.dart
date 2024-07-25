@@ -14,45 +14,73 @@ class ProductProvider extends GetxController {
   final products = <Product>[].obs;
 
   @override
-  Future<void> onInit() async {
+  void onInit() async {
     _database = await DatabaseHelper().database;
-    products.value = await _getLocal();
-    if (await Connectivity().checkConnectivity() == ConnectivityResult.none) {
-      return;
-    }
-    final dataApi = await _getApi();
-
-    if (_productExists(products, dataApi)) return;
-    for (var product in dataApi) {
-      create(product);
-    }
-    products.value = await _getLocal();
-
+    initProduct();
     super.onInit();
   }
 
+  void initProduct() async {
+    products.value = await _getLocal();
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      return;
+    }
+    final dataApi = await _getApi();
+    final missingProducts = _getMissingProducts(products, dataApi);
+    if (missingProducts.isNotEmpty) {
+      for (final product in missingProducts) {
+        create(product);
+      }
+    }
+  }
+
+  List<Product> _getMissingProducts(
+    List<Product> dataLocal,
+    List<Product> dataApi,
+  ) {
+    final productLocalNames =
+        dataLocal.map((product) => product.name.toLowerCase()).toList();
+
+    return dataApi
+        .where((productApi) =>
+            !productLocalNames.contains(productApi.name.toLowerCase()))
+        .toList();
+  }
+
   Future<List<Product>> _getApi() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/products'),
-    );
-    final List data = jsonDecode(response.body);
-    return data.map((e) => Product.fromJson(e)).toList();
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/products'),
+      );
+      final List data = jsonDecode(response.body);
+      return data.map((e) => Product.fromJson(e)).toList();
+    } catch (e) {
+      Get.rawSnackbar(message: 'Error: saat mengambil data api');
+      rethrow;
+    }
   }
 
   Future<List<Product>> _getLocal() async {
-    var data = await _database.query('products');
-
-    return data.map((e) {
-      final mutableE = Map<String, dynamic>.from(e);
-      mutableE['storageOptions'] = jsonDecode(mutableE['storageOptions']);
-      mutableE['colorOptions'] = jsonDecode(mutableE['colorOptions']);
-      mutableE['camera'] = jsonDecode(mutableE['camera']);
-      mutableE['inStock'] = mutableE['inStock'] == 1;
-      return Product.fromJson(mutableE);
-    }).toList();
+    try {
+      var data = await _database.query('products');
+      return data.map((e) {
+        final mutableE = Map<String, dynamic>.from(e);
+        mutableE['storageOptions'] = jsonDecode(mutableE['storageOptions']);
+        mutableE['colorOptions'] = jsonDecode(mutableE['colorOptions']);
+        mutableE['camera'] = jsonDecode(mutableE['camera']);
+        mutableE['inStock'] = mutableE['inStock'] == 1;
+        return Product.fromJson(mutableE);
+      }).toList();
+    } catch (e) {
+      Get.rawSnackbar(
+          message:
+              'Error: saat mengambil data products dari database. Mohon refresh halaman!');
+      rethrow;
+    }
   }
 
-  void create(Product product) async {
+  Future<void> create(Product product) async {
     final data = {
       'id': product.id,
       'productCategory': product.productCategory,
@@ -72,9 +100,10 @@ class ProductProvider extends GetxController {
       'camera': jsonEncode(product.camera?.toJson()),
     };
     await _database.insert('products', data);
+    initProduct();
   }
 
-  void edit(Product product) async {
+  Future<void> edit(Product product) async {
     final data = {
       'id': product.id,
       'productCategory': product.productCategory,
@@ -99,24 +128,24 @@ class ProductProvider extends GetxController {
       where: 'id = ?',
       whereArgs: [product.id!],
     );
+    initProduct();
   }
 
-  bool _productExists(List<Product> dataLocal, List<Product> dataApi) {
-    return dataApi.any(
-      (productApi) {
-        final productLocal =
-            dataLocal.map((productLokal) => productLokal.name).toList();
-
-        return productLocal.contains(productApi.name);
-      },
-    );
-  }
-
-  void delete(int id) async {
+  Future<void> delete(int id) async {
     await _database.delete(
       'products',
       where: 'id = ?',
       whereArgs: [id],
     );
+    initProduct();
+  }
+
+  Future<bool> productExists(String productName) async {
+    final products = await _database.query(
+      'products',
+      where: 'name = ?',
+      whereArgs: [productName],
+    );
+    return products.isEmpty ? false : true;
   }
 }

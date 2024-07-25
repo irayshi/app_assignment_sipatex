@@ -22,7 +22,7 @@ class AuthService extends GetxService {
       whereArgs: [email, password],
     );
     if (users.isNotEmpty) {
-      _user.value = User.fromJson(users.first);
+      await refreshAuth(users.first['id'] as int);
     }
     return users.isNotEmpty;
   }
@@ -32,24 +32,23 @@ class AuthService extends GetxService {
     String password,
     String displayName,
   ) async {
-    final recordUser = User(
-      email: email,
-      password: password,
-      role: 'guest',
-      displayName: displayName,
-    );
-    recordUser.id = await _database.insert(
+    final id = await _database.insert(
       'users',
-      recordUser.toJson(),
+      User(
+        email: email,
+        password: password,
+        role: 'guest',
+        displayName: displayName,
+      ).toJson(),
     );
-    _user.value = recordUser;
+    await refreshAuth(id);
   }
 
-  void refreshAuth() async {
+  Future<void> refreshAuth(int id) async {
     final users = await _database.query(
       'users',
       where: 'id = ?',
-      whereArgs: [user.id],
+      whereArgs: [id],
       columns: ['id', 'displayName', 'email', 'role'],
     );
     _user.value = User.fromJson(users.first);

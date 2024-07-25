@@ -18,29 +18,31 @@ class HomeView extends GetView<HomeController> {
       body: RefreshIndicator(
         onRefresh: () async => controller.onRefresh(),
         child: Obx(
-          () => ListView.builder(
-            shrinkWrap: true,
-            itemCount: controller.categories.length,
-            itemBuilder: (context, index) {
-              final category = controller.categories[index];
-              return ListTile(
-                onTap: () => Get.toNamed(
-                  Routes.PRODUCT_LIST,
-                  arguments: category,
+          () => controller.categories.isEmpty
+              ? const Center(
+                  child: Text('Tidak ada data'),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: controller.categories.length,
+                  itemBuilder: (context, index) {
+                    final category = controller.categories[index];
+                    return ListTile(
+                      onTap: () => Get.toNamed(
+                        Routes.PRODUCT_LIST,
+                        arguments: category,
+                      ),
+                      title: Text(category),
+                    );
+                  },
                 ),
-                title: Text(category!),
-              );
-            },
-          ),
         ),
       ),
       floatingActionButton: AuthService.to.user.role == 'admin'
           ? FloatingActionButton(
               heroTag: 'home',
               tooltip: 'Add Product',
-              onPressed: () {
-                Get.toNamed(Routes.CREATE_PRODUCT);
-              },
+              onPressed: () => Get.toNamed(Routes.CREATE_PRODUCT),
               child: const Icon(Icons.add),
             )
           : null,

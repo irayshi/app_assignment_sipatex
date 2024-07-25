@@ -18,7 +18,7 @@ class RegisterController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
   bool checkUsername = false;
-  bool checkEmail = false;
+  bool emailExists = false;
 
   final onClick = true.obs;
 
@@ -38,7 +38,7 @@ class RegisterController extends GetxController {
     if (!formKey.currentState!.validate()) return;
     String message;
     try {
-      if (checkEmail = await UserProvider.to.checkEmail(emailCtrl.text)) {
+      if (emailExists = await UserProvider.to.emailExists(emailCtrl.text)) {
         formKey.currentState!.validate();
         return;
       }

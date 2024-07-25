@@ -22,6 +22,7 @@ class EditProductController extends GetxController {
   late final TextEditingController frontCameraCtrl;
   final formKey = GlobalKey<FormState>();
   final onClick = true.obs;
+  bool productExists = false;
 
   @override
   void onInit() {
@@ -70,40 +71,59 @@ class EditProductController extends GetxController {
     super.onClose();
   }
 
-  void edit() {
+  void edit() async {
     if (!formKey.currentState!.validate()) return;
 
     onClick.value = false;
-    ProductProvider.to.edit(
-      Product(
-        id: _product.id,
-        featuredImage: _product.featuredImage,
-        thumbnailImage: _product.thumbnailImage,
-        productCategory: productCategoryCtrl.text,
-        name: nameCtrl.text,
-        brand: brandCtrl.text == '' ? null : brandCtrl.text,
-        description: descriptionCtrl.text,
-        basePrice: basePriceCtrl.numberValue.toInt(),
-        inStock: stockCtrl.numberValue.toInt() > 0,
-        stock: stockCtrl.numberValue.toInt(),
-        storageOptions: storageOptionsCtrl.text == ''
-            ? null
-            : storageOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
-        colorOptions: colorOptionsCtrl.text == ''
-            ? null
-            : colorOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
-        display: displayCtrl.text == '' ? null : displayCtrl.text,
-        cPU: cPUCtrl.text == '' ? null : cPUCtrl.text,
-        gPU: gPUCtrl.text == '' ? null : gPUCtrl.text,
-        camera: Camera(
-          frontCamera: frontCameraCtrl.text == '' ? null : frontCameraCtrl.text,
-          rearCamera: rearCameraCtrl.text == '' ? null : rearCameraCtrl.text,
+    String message;
+    try {
+      if (nameCtrl.text != _product.name) {
+        if (productExists =
+            await ProductProvider.to.productExists(nameCtrl.text)) {
+          formKey.currentState!.validate();
+          return;
+        }
+      }
+      await ProductProvider.to.edit(
+        Product(
+          id: _product.id,
+          featuredImage: _product.featuredImage,
+          thumbnailImage: _product.thumbnailImage,
+          productCategory: productCategoryCtrl.text,
+          name: nameCtrl.text,
+          brand: brandCtrl.text == '' ? null : brandCtrl.text,
+          description: descriptionCtrl.text,
+          basePrice: basePriceCtrl.numberValue.toInt(),
+          inStock: stockCtrl.numberValue.toInt() > 0,
+          stock: stockCtrl.numberValue.toInt(),
+          storageOptions: storageOptionsCtrl.text == ''
+              ? null
+              : storageOptionsCtrl.text
+                  .split(',')
+                  .map((e) => e.trim())
+                  .toList(),
+          colorOptions: colorOptionsCtrl.text == ''
+              ? null
+              : colorOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
+          display: displayCtrl.text == '' ? null : displayCtrl.text,
+          cPU: cPUCtrl.text == '' ? null : cPUCtrl.text,
+          gPU: gPUCtrl.text == '' ? null : gPUCtrl.text,
+          camera: Camera(
+            frontCamera:
+                frontCameraCtrl.text == '' ? null : frontCameraCtrl.text,
+            rearCamera: rearCameraCtrl.text == '' ? null : rearCameraCtrl.text,
+          ),
         ),
-      ),
-    );
-    ProductProvider.to.onInit();
-    Get.back();
+      );
+      Get.back();
+      if (productCategoryCtrl.text != _product.productCategory) {
+        return Get.back();
+      }
+      message = 'Produk berhasil diedit';
+    } catch (e) {
+      message = 'Error: saat mengedit product';
+    }
+    Get.rawSnackbar(message: message);
     onClick.value = true;
-    Get.rawSnackbar(message: 'Success');
   }
 }

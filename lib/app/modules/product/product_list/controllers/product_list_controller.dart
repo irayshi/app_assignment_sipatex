@@ -20,7 +20,7 @@ class ProductListController extends GetxController {
   }
 
   void onRefresh() {
-    ProductProvider.to.onInit();
+    ProductProvider.to.initProduct();
   }
 
   void delete(int id) {
@@ -32,10 +32,16 @@ class ProductListController extends GetxController {
       textConfirm: 'Iya',
       textCancel: 'Batal',
       onConfirm: () async {
-        ProductProvider.to.delete(id);
-        await ProductProvider.to.onInit();
-        if (products.isEmpty) Get.back();
-        Get.back();
+        String message;
+        try {
+          await ProductProvider.to.delete(id);
+          Get.back();
+          if (products.isEmpty) Get.back();
+          message = 'Produk berhasil dihapus';
+        } catch (e) {
+          message = 'Error: saat menghapus product';
+        }
+        Get.rawSnackbar(message: message);
       },
     );
   }

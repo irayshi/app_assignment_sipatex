@@ -55,8 +55,8 @@ class EditUserView extends GetView<EditUserController> {
                 if (value != value.toLowerCase()) {
                   controller.emailCtrl.text = value.toLowerCase();
                 }
-                if (controller.checkEmail) {
-                  controller.checkEmail = false;
+                if (controller.emailExists) {
+                  controller.emailExists = false;
                 }
               },
               keyboardType: TextInputType.emailAddress,
@@ -65,7 +65,7 @@ class EditUserView extends GetView<EditUserController> {
                   return 'Email is required';
                 } else if (!value.isEmail) {
                   return 'Email is invalid';
-                } else if (controller.checkEmail) {
+                } else if (controller.emailExists) {
                   return 'Email is already exists';
                 }
                 return null;

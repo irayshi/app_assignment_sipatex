@@ -2,7 +2,7 @@ import 'package:app_assignment_sipatex/app/data/providers/product_provider.dart'
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  final categories = <String?>[].obs;
+  final categories = <String>[].obs;
 
   @override
   void onInit() {
@@ -14,6 +14,6 @@ class HomeController extends GetxController {
   }
 
   void onRefresh() {
-    ProductProvider.to.onInit();
+    ProductProvider.to.initProduct();
   }
 }

@@ -18,7 +18,7 @@ class CreateUserController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
   bool checkUsername = false;
-  bool checkEmail = false;
+  bool emailExists = false;
 
   final onClick = true.obs;
 
@@ -36,23 +36,28 @@ class CreateUserController extends GetxController {
 
   void create() async {
     if (!formKey.currentState!.validate()) return;
-    if (checkEmail = await UserProvider.to.checkEmail(emailCtrl.text)) {
-      formKey.currentState!.validate();
-      return;
-    }
 
     onClick.value = false;
-    UserProvider.to.create(
-      User(
-        email: emailCtrl.text,
-        password: passwordCtrl.text,
-        displayName: nameCtrl.text,
-        role: role,
-      ),
-    );
-    UserProvider.to.onInit();
-    Get.back();
+    String message;
+    try {
+      if (emailExists = await UserProvider.to.emailExists(emailCtrl.text)) {
+        formKey.currentState!.validate();
+        return;
+      }
+      await UserProvider.to.create(
+        User(
+          email: emailCtrl.text,
+          password: passwordCtrl.text,
+          displayName: nameCtrl.text,
+          role: role,
+        ),
+      );
+      Get.back();
+      message = 'User berhasil ditambahkan';
+    } catch (e) {
+      message = 'Error: saat menambahkan user';
+    }
+    Get.rawSnackbar(message: message);
     onClick.value = true;
-    Get.rawSnackbar(message: 'Success');
   }
 }

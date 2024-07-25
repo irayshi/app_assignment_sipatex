@@ -15,7 +15,7 @@ class UsersController extends GetxController {
   }
 
   void onRefresh() {
-    UserProvider.to.onInit();
+    UserProvider.to.initUsers();
   }
 
   void delete(int id) {
@@ -26,11 +26,16 @@ class UsersController extends GetxController {
       middleText: 'Apa anda yakin ingin menghapus data ini?',
       textConfirm: 'Iya',
       textCancel: 'Batal',
-      onConfirm: () {
-        UserProvider.to.delete(id);
-        UserProvider.to.onInit();
-        if (users.isEmpty) Get.back();
-        Get.back();
+      onConfirm: () async {
+        String message;
+        try {
+          await UserProvider.to.delete(id);
+          Get.back();
+          message = 'User berhasil dihapus';
+        } catch (e) {
+          message = 'Error: saat menghapus user';
+        }
+        Get.rawSnackbar(message: message);
       },
     );
   }

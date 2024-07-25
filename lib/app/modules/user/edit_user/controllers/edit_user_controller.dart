@@ -18,7 +18,7 @@ class EditUserController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
   bool checkUsername = false;
-  bool checkEmail = false;
+  bool emailExists = false;
 
   final onClick = true.obs;
 
@@ -42,28 +42,33 @@ class EditUserController extends GetxController {
 
   void edit() async {
     if (!formKey.currentState!.validate()) return;
-    if (emailCtrl.text != _user.email!) {
-      if (checkEmail = await UserProvider.to.checkEmail(emailCtrl.text)) {
-        formKey.currentState!.validate();
-        return;
-      }
-    }
 
     onClick.value = false;
-    UserProvider.to.edit(
-      User(
-        id: _user.id,
-        email: emailCtrl.text,
-        displayName: nameCtrl.text,
-        role: role,
-      ),
-    );
-    UserProvider.to.onInit();
-    if (AuthService.to.user.id == _user.id) {
-      AuthService.to.refreshAuth();
+    String message;
+    try {
+      if (emailCtrl.text != _user.email!) {
+        if (emailExists = await UserProvider.to.emailExists(emailCtrl.text)) {
+          formKey.currentState!.validate();
+          return;
+        }
+      }
+      await UserProvider.to.edit(
+        User(
+          id: _user.id,
+          email: emailCtrl.text,
+          displayName: nameCtrl.text,
+          role: role,
+        ),
+      );
+      if (AuthService.to.user.id == _user.id) {
+        await AuthService.to.refreshAuth(AuthService.to.user.id!);
+      }
+      Get.back();
+      message = 'User berhasil diedit';
+    } catch (e) {
+      message = 'Error: saat mengedit user';
     }
-    Get.back();
+    Get.rawSnackbar(message: message);
     onClick.value = true;
-    Get.rawSnackbar(message: 'Success');
   }
 }

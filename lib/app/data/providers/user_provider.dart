@@ -11,25 +11,36 @@ class UserProvider extends GetxController {
   @override
   void onInit() async {
     _database = await DatabaseHelper().database;
-    users.value = await _getLocal();
+    initUsers();
     super.onInit();
   }
 
-  Future<List<User>> _getLocal() async {
-    final data = await _database.query('users');
-
-    return data.map((e) => User.fromJson(e)).toList();
+  void initUsers() async {
+    users.value = await _getLocal();
   }
 
-  void delete(int id) async {
+  Future<List<User>> _getLocal() async {
+    try {
+      final data = await _database.query('users');
+      return data.map((e) => User.fromJson(e)).toList();
+    } catch (e) {
+      Get.rawSnackbar(
+          message:
+              'Error: saat mengambil data users dari database. Mohon refresh halaman!');
+      rethrow;
+    }
+  }
+
+  Future<void> delete(int id) async {
     await _database.delete(
       'users',
       where: 'id = ?',
       whereArgs: [id],
     );
+    initUsers();
   }
 
-  void create(User user) async {
+  Future<void> create(User user) async {
     final data = {
       'id': user.id,
       'email': user.email,
@@ -38,9 +49,10 @@ class UserProvider extends GetxController {
       'displayName': user.displayName,
     };
     await _database.insert('users', data);
+    initUsers();
   }
 
-  void edit(User user) async {
+  Future<void> edit(User user) async {
     final data = {
       'id': user.id,
       'email': user.email,
@@ -53,9 +65,10 @@ class UserProvider extends GetxController {
       where: 'id = ?',
       whereArgs: [user.id!],
     );
+    initUsers();
   }
 
-  Future<bool> checkEmail(String email) async {
+  Future<bool> emailExists(String email) async {
     final users = await _database.query(
       'users',
       where: 'email = ?',

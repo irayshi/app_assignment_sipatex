@@ -29,6 +29,7 @@ class CreateProductController extends GetxController {
   final frontCameraCtrl = TextEditingController();
   final formKey = GlobalKey<FormState>();
   final onClick = true.obs;
+  bool productExists = false;
 
   @override
   void onClose() {
@@ -48,37 +49,51 @@ class CreateProductController extends GetxController {
     super.onClose();
   }
 
-  void create() {
+  void create() async {
     if (!formKey.currentState!.validate()) return;
 
     onClick.value = false;
-    ProductProvider.to.create(
-      Product(
-        productCategory: productCategoryCtrl.text,
-        name: nameCtrl.text,
-        brand: brandCtrl.text == '' ? null : brandCtrl.text,
-        description: descriptionCtrl.text,
-        basePrice: basePriceCtrl.numberValue.toInt(),
-        inStock: stockCtrl.numberValue.toInt() > 0,
-        stock: stockCtrl.numberValue.toInt(),
-        storageOptions: storageOptionsCtrl.text == ''
-            ? null
-            : storageOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
-        colorOptions: colorOptionsCtrl.text == ''
-            ? null
-            : colorOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
-        display: displayCtrl.text == '' ? null : displayCtrl.text,
-        cPU: cPUCtrl.text == '' ? null : cPUCtrl.text,
-        gPU: gPUCtrl.text == '' ? null : gPUCtrl.text,
-        camera: Camera(
-          frontCamera: frontCameraCtrl.text == '' ? null : frontCameraCtrl.text,
-          rearCamera: rearCameraCtrl.text == '' ? null : rearCameraCtrl.text,
+    String message;
+    try {
+      if (productExists =
+          await ProductProvider.to.productExists(nameCtrl.text)) {
+        formKey.currentState!.validate();
+        return;
+      }
+      await ProductProvider.to.create(
+        Product(
+          productCategory: productCategoryCtrl.text,
+          name: nameCtrl.text,
+          brand: brandCtrl.text == '' ? null : brandCtrl.text,
+          description: descriptionCtrl.text,
+          basePrice: basePriceCtrl.numberValue.toInt(),
+          inStock: stockCtrl.numberValue.toInt() > 0,
+          stock: stockCtrl.numberValue.toInt(),
+          storageOptions: storageOptionsCtrl.text == ''
+              ? null
+              : storageOptionsCtrl.text
+                  .split(',')
+                  .map((e) => e.trim())
+                  .toList(),
+          colorOptions: colorOptionsCtrl.text == ''
+              ? null
+              : colorOptionsCtrl.text.split(',').map((e) => e.trim()).toList(),
+          display: displayCtrl.text == '' ? null : displayCtrl.text,
+          cPU: cPUCtrl.text == '' ? null : cPUCtrl.text,
+          gPU: gPUCtrl.text == '' ? null : gPUCtrl.text,
+          camera: Camera(
+            frontCamera:
+                frontCameraCtrl.text == '' ? null : frontCameraCtrl.text,
+            rearCamera: rearCameraCtrl.text == '' ? null : rearCameraCtrl.text,
+          ),
         ),
-      ),
-    );
-    ProductProvider.to.onInit();
-    Get.back();
+      );
+      Get.back();
+      message = 'Produk berhasil ditambahkan';
+    } catch (e) {
+      message = 'Error: saat menambahkan product';
+    }
+    Get.rawSnackbar(message: message);
     onClick.value = true;
-    Get.rawSnackbar(message: 'Success');
   }
 }
