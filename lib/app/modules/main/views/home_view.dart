@@ -16,6 +16,7 @@ class HomeView extends GetView<HomeController> {
         centerTitle: true,
       ),
       body: RefreshIndicator(
+        color: Colors.white,
         onRefresh: () async => controller.onRefresh(),
         child: Obx(
           () => controller.categories.isEmpty
