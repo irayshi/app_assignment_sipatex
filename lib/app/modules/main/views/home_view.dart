@@ -39,14 +39,17 @@ class HomeView extends GetView<HomeController> {
                 ),
         ),
       ),
-      floatingActionButton: AuthService.to.user.role == 'admin'
-          ? FloatingActionButton(
-              heroTag: 'home',
-              tooltip: 'Add Product',
-              onPressed: () => Get.toNamed(Routes.CREATE_PRODUCT),
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButton: Obx(
+        () => Visibility(
+          visible: AuthService.to.user.role == 'admin',
+          child: FloatingActionButton(
+            heroTag: 'home',
+            tooltip: 'Add Product',
+            onPressed: () => Get.toNamed(Routes.CREATE_PRODUCT),
+            child: const Icon(Icons.add),
+          ),
+        ),
+      ),
     );
   }
 }
