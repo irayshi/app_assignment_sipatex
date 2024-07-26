@@ -14,8 +14,8 @@ class UsersController extends GetxController {
     super.onInit();
   }
 
-  void onRefresh() {
-    UserProvider.to.initUsers();
+  void onRefresh() async {
+    await UserProvider.to.initUsers();
   }
 
   void delete(int id) {

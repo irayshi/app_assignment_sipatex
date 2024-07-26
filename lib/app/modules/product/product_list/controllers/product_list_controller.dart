@@ -19,8 +19,8 @@ class ProductListController extends GetxController {
     super.onInit();
   }
 
-  void onRefresh() {
-    ProductProvider.to.initProduct();
+  void onRefresh() async {
+    await ProductProvider.to.initProduct();
   }
 
   void delete(int id) {

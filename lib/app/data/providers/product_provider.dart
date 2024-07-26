@@ -16,11 +16,11 @@ class ProductProvider extends GetxController {
   @override
   void onInit() async {
     _database = await DatabaseHelper().database;
-    initProduct();
+    await initProduct();
     super.onInit();
   }
 
-  void initProduct() async {
+  Future<void> initProduct() async {
     products.value = await _getLocal();
     final connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult.contains(ConnectivityResult.none)) {
@@ -99,8 +99,12 @@ class ProductProvider extends GetxController {
       'GPU': product.gPU,
       'camera': jsonEncode(product.camera?.toJson()),
     };
-    await _database.insert('products', data);
-    initProduct();
+    await _database.insert(
+      'products',
+      data,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    await initProduct();
   }
 
   Future<void> edit(Product product) async {
@@ -127,8 +131,9 @@ class ProductProvider extends GetxController {
       data,
       where: 'id = ?',
       whereArgs: [product.id!],
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    initProduct();
+    await initProduct();
   }
 
   Future<void> delete(int id) async {
@@ -137,7 +142,7 @@ class ProductProvider extends GetxController {
       where: 'id = ?',
       whereArgs: [id],
     );
-    initProduct();
+    await initProduct();
   }
 
   Future<bool> productExists(String productName) async {

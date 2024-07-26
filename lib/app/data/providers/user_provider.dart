@@ -11,11 +11,11 @@ class UserProvider extends GetxController {
   @override
   void onInit() async {
     _database = await DatabaseHelper().database;
-    initUsers();
+    await initUsers();
     super.onInit();
   }
 
-  void initUsers() async {
+  Future<void> initUsers() async {
     users.value = await _getLocal();
   }
 
@@ -37,7 +37,7 @@ class UserProvider extends GetxController {
       where: 'id = ?',
       whereArgs: [id],
     );
-    initUsers();
+    await initUsers();
   }
 
   Future<void> create(User user) async {
@@ -48,8 +48,12 @@ class UserProvider extends GetxController {
       'role': user.role,
       'displayName': user.displayName,
     };
-    await _database.insert('users', data);
-    initUsers();
+    await _database.insert(
+      'users',
+      data,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    await initUsers();
   }
 
   Future<void> edit(User user) async {
@@ -64,8 +68,9 @@ class UserProvider extends GetxController {
       data,
       where: 'id = ?',
       whereArgs: [user.id!],
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    initUsers();
+    await initUsers();
   }
 
   Future<bool> emailExists(String email) async {
