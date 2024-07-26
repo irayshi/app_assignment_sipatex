@@ -16,7 +16,13 @@ class MainView extends GetView<MainController> {
       body: Obx(
         () => IndexedStack(
           index: controller.index.value,
-          children: const [HomeView(), UsersView(), ProfileView()],
+          children: [
+            const HomeView(),
+            if (AuthService.to.user.role == 'admin') ...[
+              const UsersView(),
+            ],
+            const ProfileView(),
+          ],
         ),
       ),
       bottomNavigationBar: Obx(
