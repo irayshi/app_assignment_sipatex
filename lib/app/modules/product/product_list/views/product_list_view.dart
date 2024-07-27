@@ -13,7 +13,7 @@ class ProductListView extends GetView<ProductListController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Get.arguments),
+        title: Text(controller.category),
         centerTitle: true,
       ),
       body: RefreshIndicator(

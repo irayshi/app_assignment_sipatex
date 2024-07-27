@@ -30,7 +30,7 @@ class ProductProvider extends GetxController {
     final missingProducts = _getMissingProducts(products, dataApi);
     if (missingProducts.isNotEmpty) {
       for (final product in missingProducts) {
-        create(product);
+        await create(product);
       }
     }
   }

@@ -5,16 +5,16 @@ import 'package:get/get.dart';
 
 class ProductListController extends GetxController {
   final products = <Product>[].obs;
+  final String category = Get.arguments;
 
   @override
   void onInit() {
     products.value = ProductProvider.to.products
-        .where((product) => product.productCategory == Get.arguments)
+        .where((product) => product.productCategory == category)
         .toList();
     ever(ProductProvider.to.products, (data) {
-      products.value = data
-          .where((product) => product.productCategory == Get.arguments)
-          .toList();
+      products.value =
+          data.where((product) => product.productCategory == category).toList();
     });
     super.onInit();
   }
