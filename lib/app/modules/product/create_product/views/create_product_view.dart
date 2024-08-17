@@ -1,6 +1,4 @@
-import 'package:app_assignment_sipatex/app/core/values/colors.dart';
 import 'package:app_assignment_sipatex/app/modules/main/controllers/home_controller.dart';
-import 'package:app_assignment_sipatex/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -256,19 +254,12 @@ class CreateProductView extends GetView<CreateProductController> {
               controller: controller.frontCameraCtrl,
             ),
             const SizedBox(height: 20),
-            ButtonWidget(
-              buttonColor: controller.onClick.value ? null : grey,
-              textButton: controller.onClick.value ? 'Create' : 'Loading...',
-              textStyle: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            Obx(
+              () => FilledButton(
+                onPressed:
+                    controller.onClick.value ? () => controller.create() : null,
+                child: Text(controller.onClick.value ? 'Create' : 'Loading...'),
               ),
-              onTap:
-                  controller.onClick.value ? () => controller.create() : null,
-              width: double.infinity,
-              height: 40,
-              borderRadius: BorderRadius.circular(10),
             ),
             const SizedBox(height: 20),
           ],

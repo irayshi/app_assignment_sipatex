@@ -20,7 +20,9 @@ void main() {
       title: "Application Assignment Sipatex",
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      theme: Themes.dark,
+      themeMode: ThemeMode.light,
+      theme: Themes.light,
+      darkTheme: Themes.dark,
     ),
   );
 }

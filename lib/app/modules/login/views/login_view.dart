@@ -1,6 +1,4 @@
-import 'package:app_assignment_sipatex/app/core/values/colors.dart';
 import 'package:app_assignment_sipatex/app/routes/app_pages.dart';
-import 'package:app_assignment_sipatex/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -14,7 +12,7 @@ class LoginView extends GetView<LoginController> {
       body: Form(
         key: controller.formKey,
         child: ListView(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(20),
           children: [
             Container(
               alignment: Alignment.center,
@@ -90,19 +88,10 @@ class LoginView extends GetView<LoginController> {
             ),
             const SizedBox(height: 20),
             Obx(
-              () => ButtonWidget(
-                buttonColor: controller.onClick.value ? null : grey,
-                textButton: controller.onClick.value ? 'Login' : 'Loading...',
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                onTap:
+              () => FilledButton(
+                onPressed:
                     controller.onClick.value ? () => controller.login() : null,
-                width: double.infinity,
-                height: 40,
-                borderRadius: BorderRadius.circular(10),
+                child: Text(controller.onClick.value ? 'Login' : 'Loading...'),
               ),
             ),
             const SizedBox(height: 20),
@@ -121,7 +110,9 @@ class LoginView extends GetView<LoginController> {
                       'Register',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: controller.hover.value ? (Colors.black) : null,
+                        color: controller.hover2.value
+                            ? Theme.of(context).colorScheme.onSecondary
+                            : null,
                       ),
                     ),
                   ),

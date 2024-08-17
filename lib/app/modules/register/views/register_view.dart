@@ -1,5 +1,3 @@
-import 'package:app_assignment_sipatex/app/core/values/colors.dart';
-import 'package:app_assignment_sipatex/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -25,7 +23,6 @@ class RegisterView extends GetView<RegisterController> {
                   Text(
                     'Create an Account',
                     style: TextStyle(
-                      color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -34,7 +31,6 @@ class RegisterView extends GetView<RegisterController> {
                   Text(
                     "Join our community! Fill out the form below to create your new account.",
                     style: TextStyle(
-                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w300,
                     ),
@@ -156,21 +152,12 @@ class RegisterView extends GetView<RegisterController> {
             ),
             const SizedBox(height: 20),
             Obx(
-              () => ButtonWidget(
-                buttonColor: controller.onClick.value ? null : grey,
-                textButton:
-                    controller.onClick.value ? 'Register' : 'Loading...',
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                onTap: controller.onClick.value
+              () => FilledButton(
+                onPressed: controller.onClick.value
                     ? () => controller.register()
                     : null,
-                width: double.infinity,
-                height: 40,
-                borderRadius: BorderRadius.circular(10),
+                child:
+                    Text(controller.onClick.value ? 'Register' : 'Loading...'),
               ),
             ),
             const SizedBox(height: 20),
@@ -189,7 +176,9 @@ class RegisterView extends GetView<RegisterController> {
                       'Login',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: controller.hover.value ? (Colors.black) : null,
+                        color: controller.hover2.value
+                            ? Theme.of(context).colorScheme.onSecondary
+                            : null,
                       ),
                     ),
                   ),

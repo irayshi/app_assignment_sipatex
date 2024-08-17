@@ -16,12 +16,13 @@ class HomeView extends GetView<HomeController> {
         centerTitle: true,
       ),
       body: RefreshIndicator(
-        color: Colors.white,
         onRefresh: () async => controller.onRefresh(),
         child: Obx(
           () => controller.categories.isEmpty
-              ? const Center(
-                  child: Text('Tidak ada data'),
+              ? ListView(
+                  children: const [
+                    Text('Tidak ada data'),
+                  ],
                 )
               : ListView.builder(
                   shrinkWrap: true,

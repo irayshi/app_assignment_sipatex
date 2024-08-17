@@ -1,5 +1,3 @@
-import 'package:app_assignment_sipatex/app/core/values/colors.dart';
-import 'package:app_assignment_sipatex/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -154,19 +152,10 @@ class CreateUserView extends GetView<CreateUserController> {
             ),
             const SizedBox(height: 20),
             Obx(
-              () => ButtonWidget(
-                buttonColor: controller.onClick.value ? null : grey,
-                textButton: controller.onClick.value ? 'Create' : 'Loading...',
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                onTap:
+              () => FilledButton(
+                onPressed:
                     controller.onClick.value ? () => controller.create() : null,
-                width: double.infinity,
-                height: 40,
-                borderRadius: BorderRadius.circular(10),
+                child: Text(controller.onClick.value ? 'Create' : 'Loading...'),
               ),
             ),
             const SizedBox(height: 20),

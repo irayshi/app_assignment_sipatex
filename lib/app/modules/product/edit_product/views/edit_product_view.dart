@@ -1,6 +1,4 @@
-import 'package:app_assignment_sipatex/app/core/values/colors.dart';
 import 'package:app_assignment_sipatex/app/modules/main/controllers/home_controller.dart';
-import 'package:app_assignment_sipatex/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -255,18 +253,12 @@ class EditProductView extends GetView<EditProductController> {
               controller: controller.frontCameraCtrl,
             ),
             const SizedBox(height: 20),
-            ButtonWidget(
-              buttonColor: controller.onClick.value ? null : grey,
-              textButton: controller.onClick.value ? 'Edit' : 'Loading...',
-              textStyle: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            Obx(
+              () => FilledButton(
+                onPressed:
+                    controller.onClick.value ? () => controller.edit() : null,
+                child: Text(controller.onClick.value ? 'Edit' : 'Loading...'),
               ),
-              onTap: controller.onClick.value ? () => controller.edit() : null,
-              width: double.infinity,
-              height: 40,
-              borderRadius: BorderRadius.circular(10),
             ),
             const SizedBox(height: 20),
           ],
