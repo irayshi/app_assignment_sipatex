@@ -1,16 +1,14 @@
-import 'package:app_assignment_sipatex/app/data/databases/database_helper.dart';
+import 'package:app_assignment_sipatex/app/data/services/database_service.dart';
 import 'package:app_assignment_sipatex/app/data/models/user_model.dart';
 import 'package:get/get.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserProvider extends GetxController {
   static UserProvider get to => Get.find();
-  late Database _database;
   final users = <User>[].obs;
 
   @override
   void onInit() async {
-    _database = await DatabaseHelper().database;
     await initUsers();
     super.onInit();
   }
@@ -21,18 +19,17 @@ class UserProvider extends GetxController {
 
   Future<List<User>> _getLocal() async {
     try {
-      final data = await _database.query('users');
+      final data = await DatabaseService.to.query('users');
       return data.map((e) => User.fromJson(e)).toList();
     } catch (e) {
       Get.rawSnackbar(
-          message:
-              'Error: saat mengambil data users dari database. Mohon refresh halaman!');
+          message: 'Error: saat mengambil data users dari database. Mohon refresh halaman!');
       rethrow;
     }
   }
 
   Future<void> delete(int id) async {
-    await _database.delete(
+    await DatabaseService.to.delete(
       'users',
       where: 'id = ?',
       whereArgs: [id],
@@ -48,7 +45,7 @@ class UserProvider extends GetxController {
       'role': user.role,
       'displayName': user.displayName,
     };
-    await _database.insert(
+    await DatabaseService.to.insert(
       'users',
       data,
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -63,7 +60,7 @@ class UserProvider extends GetxController {
       'role': user.role,
       'displayName': user.displayName,
     };
-    await _database.update(
+    await DatabaseService.to.update(
       'users',
       data,
       where: 'id = ?',
@@ -74,7 +71,7 @@ class UserProvider extends GetxController {
   }
 
   Future<bool> emailExists(String email) async {
-    final users = await _database.query(
+    final users = await DatabaseService.to.query(
       'users',
       where: 'email = ?',
       whereArgs: [email],

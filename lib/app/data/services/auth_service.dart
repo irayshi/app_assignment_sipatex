@@ -1,22 +1,14 @@
-import 'package:app_assignment_sipatex/app/data/databases/database_helper.dart';
+import 'package:app_assignment_sipatex/app/data/services/database_service.dart';
 import 'package:app_assignment_sipatex/app/data/models/user_model.dart';
 import 'package:get/get.dart';
-import 'package:sqflite/sqflite.dart';
 
 class AuthService extends GetxService {
   static AuthService get to => Get.find();
-  late Database _database;
   final _user = Rx<User?>(null);
   User get user => _user.value!;
 
-  @override
-  void onInit() async {
-    _database = await DatabaseHelper().database;
-    super.onInit();
-  }
-
   Future<bool> login(String email, String password) async {
-    final users = await _database.query(
+    final users = await DatabaseService.to.query(
       'users',
       where: 'email = ? AND password = ?',
       whereArgs: [email, password],
@@ -32,7 +24,7 @@ class AuthService extends GetxService {
     String password,
     String displayName,
   ) async {
-    final id = await _database.insert(
+    final id = await DatabaseService.to.insert(
       'users',
       User(
         email: email,
@@ -45,7 +37,7 @@ class AuthService extends GetxService {
   }
 
   Future<void> refreshAuth(int id) async {
-    final users = await _database.query(
+    final users = await DatabaseService.to.query(
       'users',
       where: 'id = ?',
       whereArgs: [id],

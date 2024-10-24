@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:app_assignment_sipatex/app/data/databases/database_helper.dart';
+import 'package:app_assignment_sipatex/app/data/services/database_service.dart';
 import 'package:app_assignment_sipatex/app/data/models/product_model.dart';
+import 'package:app_assignment_sipatex/app/data/services/tables/products_table.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -9,13 +10,11 @@ import 'package:sqflite/sqflite.dart';
 
 class ProductProvider extends GetxController {
   static ProductProvider get to => Get.find();
-  late Database _database;
   final baseUrl = 'https://dummyapi.online/api';
   final products = <Product>[].obs;
 
   @override
   void onInit() async {
-    _database = await DatabaseHelper().database;
     await initProduct();
     super.onInit();
   }
@@ -39,12 +38,10 @@ class ProductProvider extends GetxController {
     List<Product> dataLocal,
     List<Product> dataApi,
   ) {
-    final productLocalNames =
-        dataLocal.map((product) => product.name.toLowerCase()).toList();
+    final productLocalNames = dataLocal.map((product) => product.name.toLowerCase()).toList();
 
     return dataApi
-        .where((productApi) =>
-            !productLocalNames.contains(productApi.name.toLowerCase()))
+        .where((productApi) => !productLocalNames.contains(productApi.name.toLowerCase()))
         .toList();
   }
 
@@ -63,7 +60,7 @@ class ProductProvider extends GetxController {
 
   Future<List<Product>> _getLocal() async {
     try {
-      var data = await _database.query('products');
+      var data = await DatabaseService.to.query(tblProducts);
       return data.map((e) {
         final mutableE = Map<String, dynamic>.from(e);
         mutableE['storageOptions'] = jsonDecode(mutableE['storageOptions']);
@@ -74,8 +71,7 @@ class ProductProvider extends GetxController {
       }).toList();
     } catch (e) {
       Get.rawSnackbar(
-          message:
-              'Error: saat mengambil data products dari database. Mohon refresh halaman!');
+          message: 'Error: saat mengambil data products dari database. Mohon refresh halaman!');
       rethrow;
     }
   }
@@ -99,8 +95,8 @@ class ProductProvider extends GetxController {
       'GPU': product.gPU,
       'camera': jsonEncode(product.camera?.toJson()),
     };
-    await _database.insert(
-      'products',
+    await DatabaseService.to.insert(
+      tblProducts,
       data,
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -126,8 +122,8 @@ class ProductProvider extends GetxController {
       'GPU': product.gPU,
       'camera': jsonEncode(product.camera?.toJson()),
     };
-    await _database.update(
-      'products',
+    await DatabaseService.to.update(
+      tblProducts,
       data,
       where: 'id = ?',
       whereArgs: [product.id!],
@@ -137,8 +133,8 @@ class ProductProvider extends GetxController {
   }
 
   Future<void> delete(int id) async {
-    await _database.delete(
-      'products',
+    await DatabaseService.to.delete(
+      tblProducts,
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -146,8 +142,8 @@ class ProductProvider extends GetxController {
   }
 
   Future<bool> productExists(String productName) async {
-    final products = await _database.query(
-      'products',
+    final products = await DatabaseService.to.query(
+      tblProducts,
       where: 'name = ?',
       whereArgs: [productName],
     );
