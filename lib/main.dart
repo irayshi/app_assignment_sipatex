@@ -1,44 +1,33 @@
-import 'dart:io';
-
-import 'package:app_assignment_sipatex/app/data/services/auth_service.dart';
-import 'package:app_assignment_sipatex/app/data/services/database_service.dart';
-import 'package:app_assignment_sipatex/themes.dart';
+import 'package:app_assignment_sipatex/app/app_database.dart';
+import 'package:app_assignment_sipatex/app/app_info.dart';
+import 'package:app_assignment_sipatex/app/routes.dart';
+import 'package:app_assignment_sipatex/app/themes.dart';
+import 'package:app_assignment_sipatex/providers/auth_provider.dart';
+import 'package:app_assignment_sipatex/services/auth_service.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-import 'app/routes/app_pages.dart';
-
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HttpOverrides.global = MyHttpOverrides();
-
-  if (Platform.isLinux) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
-
-  Get.put(DatabaseService());
-  Get.put(AuthService());
-
-  runApp(
-    GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Application Assignment Sipatex",
-      initialRoute: AppPages.initial,
-      getPages: AppPages.routes,
-      themeMode: ThemeMode.light,
-      theme: Themes.light,
-      darkTheme: Themes.dark,
-    ),
-  );
+  final db = await Get.putAsync<Database>(() => AppDatabase().database);
+  Get.lazyPut(() => AuthProvider(db: db));
+  Get.lazyPut(() => AuthService(authProvider: AuthProvider.to));
+  await AuthService.to.loadSession();
+  runApp(const MyApp());
 }
 
-class MyHttpOverrides extends HttpOverrides {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: AppInfo.name,
+      initialRoute: AuthService.to.userId == null ? Routes.login : Routes.home,
+      getPages: Routes.pages,
+      theme: Themes.light,
+    );
   }
 }
