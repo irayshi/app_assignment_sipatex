@@ -1,0 +1,3 @@
+- apakah fitur login jalan
+- apakah fitur register jalan
+- apakah fitur session agar bisa autologin jalan
