@@ -43,7 +43,9 @@ class AppDatabase {
             shop_id INTEGER NOT NULL,
             price INTEGER NOT NULL,
             rating REAL,
-            images TEXT NOT NULL
+            images TEXT NOT NULL,
+            total_sales INTEGER NOT NULL DEFAULT 0,
+            favorite_id INTEGER
           )
         ''');
         await db.execute('''

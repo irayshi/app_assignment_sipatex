@@ -1,4 +1,4 @@
-import 'package:app_assignment_sipatex/app/routes.dart';
+// import 'package:app_assignment_sipatex/app/routes.dart';
 import 'package:app_assignment_sipatex/providers/auth_provider.dart';
 import 'package:get/get.dart';
 
@@ -17,7 +17,7 @@ class AuthService {
   Future<void> login({required String email, required String password}) async {
     userId = await _authProvider.login(email: email, password: password);
     await _authProvider.saveSession(userId: userId!, isLoggedIn: true);
-    Get.offAllNamed(Routes.home);
+    // Get.offAllNamed(Routes.home);
   }
 
   Future<void> register({
@@ -31,12 +31,12 @@ class AuthService {
       name: name,
     );
     await _authProvider.saveSession(userId: userId!, isLoggedIn: true);
-    Get.offAllNamed(Routes.home);
+    // Get.offAllNamed(Routes.home);
   }
 
   Future<void> logout() async {
     await _authProvider.saveSession(userId: userId!, isLoggedIn: false);
     userId = null;
-    Get.offAllNamed(Routes.login);
+    // Get.offAllNamed(Routes.login);
   }
 }

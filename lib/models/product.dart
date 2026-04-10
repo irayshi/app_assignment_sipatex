@@ -1,45 +1,34 @@
-import 'dart:convert';
-
 class Product {
   final int id;
   final String name;
-  final int qty;
-  final int shopId;
+  final int totalSales;
   final int price;
+  final String img;
+  final String address;
+  final String? favoriteId;
   final double? rating;
-  final List<String> images;
 
   const Product({
     required this.id,
     required this.name,
-    required this.qty,
-    required this.shopId,
+    this.totalSales = 0,
     required this.price,
-    this.rating,
-    this.images = const [],
+    required this.img,
+    required this.address,
+    required this.favoriteId,
+    required this.rating,
   });
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
-      id: map['id'] as int,
-      name: map['name'] as String,
-      qty: map['qty'] as int,
-      shopId: map['shopId'] as int,
-      price: map['price'] as int,
-      rating: map['rating'] as double?,
-      images: jsonDecode(map['rating'] as String) as List<String>,
+      id: map['id'],
+      name: map['name'],
+      totalSales: map['total_sales'],
+      price: map['price'],
+      img: map['img'],
+      address: map['address'],
+      favoriteId: map['favorite_id'],
+      rating: map['rating'],
     );
-  }
-  
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'qty': qty,
-      'shop_id': shopId,
-      'price': price,
-      'rating': rating,
-      'images': jsonEncode(images),
-    };
   }
 }
